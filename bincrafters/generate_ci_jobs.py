@@ -63,7 +63,7 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
             matrix["config"] = [
                 {"name": "Installer Linux", "compiler": "GCC", "version": "7", "os": "ubuntu-20.04", "dockerImage": "conanio/gcc7"},
                 {"name": "Installer Windows", "compiler": "VISUAL", "version": "16", "os": "windows-2019"},
-                {"name": "Installer macOS", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macos-10.15"}
+                {"name": "Installer macOS", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macos-11"}
             ]
             matrix_minimal["config"] = matrix["config"].copy()
         elif recipe_type == "unconditional_header_only":
@@ -88,8 +88,8 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
             ]
             if run_macos:
                 matrix["config"] += [
-                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-10.15"},
-                    {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-10.15"},
+                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
+                    {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
                 ]
             if run_windows:
                 matrix["config"] += [
@@ -102,7 +102,7 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
             ]
             if run_macos:
                 matrix_minimal["config"] += [
-                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-10.15"},
+                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
                 ]
             if run_windows:
                 matrix_minimal["config"] += [
@@ -114,13 +114,13 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
             matrix_minimal["config"] = []
         else:
             matrix["config"] = [
-                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-10.15"},
-                {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "12.0", "os": "macOS-10.15"},
+                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
+                {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "12.0", "os": "macOS-11"},
                 {"name": "Windows VS 2019", "compiler": "VISUAL", "version": "16", "os": "windows-2019"},
                 # {"name": "Windows VS 2022 - Testing", "compiler": "VISUAL", "version": "17", "os": "windows-2022"},
             ]
             matrix_minimal["config"] = [
-                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-10.15"},
+                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
                 {"name": "Windows VS 2019", "compiler": "VISUAL", "version": "16", "os": "windows-2019"},
             ]
 

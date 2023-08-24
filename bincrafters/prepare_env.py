@@ -41,6 +41,7 @@ def prepare_env(platform: str, config: json, select_config: str = None):
     compiler_version = config["version"]
     docker_image = config.get("dockerImage", "")
     build_type = config.get("buildType", "")
+    xcode_dir = config.get("xcodeDir", "")
 
     _set_env_variable("BPT_CWD", config["cwd"])
     _set_env_variable("CONAN_VERSION", config["recipe_version"])
@@ -69,21 +70,23 @@ def prepare_env(platform: str, config: json, select_config: str = None):
 
     if platform == "gha" or platform == "azp":
         if compiler == "APPLE_CLANG":
-            xcode_mapping = {
-                "9.1": "/Applications/Xcode_9.4.1.app",
-                "10.0": "/Applications/Xcode_10.3.app",
-                "11.0": "/Applications/Xcode_11.5.app",
-                "12.0": "/Applications/Xcode_12.4.app",
-                "13.0": "/Applications/Xcode_13.2.1.app",
-                "13.1": "/Applications/Xcode_13.4.1.app",
-                "14.0": "/Applications/Xcode_14.0.1.app",
-            }
-            if compiler_version in xcode_mapping:
+            if not xcode_dir:
+                xcode_mapping = {
+                    "11.0": "/Applications/Xcode_11.7.app",
+                    "12.0": "/Applications/Xcode_12.4.app",
+                    "13.0": "/Applications/Xcode_13.2.1.app",  # Highest for macos-11 (and default)
+                    "13.1": "/Applications/Xcode_13.4.1.app",
+                    "14.0": "/Applications/Xcode_14.2.app",  # Highest for macos-12 (default for macos-12 and macos-13)
+                    "15.0": "/Applications/Xcode_15.0.app",  # only on macos-13, beta currently
+                }
+                if compiler_version in xcode_mapping:
+                    xcode_dir = xcode_mapping[compiler_version]
+            if xcode_dir:
                 subprocess.run(
-                    'sudo xcode-select -switch "{}"'.format(xcode_mapping[compiler_version]),
+                    'sudo xcode-select -switch "{}"'.format(xcode_dir),
                     shell=True
                 )
-                print('executing: xcode-select -switch "{}"'.format(xcode_mapping[compiler_version]))
+                print('executing: xcode-select -switch "{}"'.format(xcode_dir))
 
             subprocess.run(
                 'clang++ --version',
