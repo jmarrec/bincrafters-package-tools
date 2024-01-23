@@ -77,7 +77,7 @@ def prepare_env(platform: str, config: json, select_config: str = None):
                     "13.0": "/Applications/Xcode_13.2.1.app",  # Highest for macos-11 (and default)
                     "13.1": "/Applications/Xcode_13.4.1.app",
                     "14.0": "/Applications/Xcode_14.2.app",  # Highest for macos-12 (default for macos-12 and macos-13)
-                    "15.0": "/Applications/Xcode_15.0.app",  # only on macos-13, beta currently
+                    "15.0": "/Applications/Xcode_15.2.app",  # only on macos-13
                 }
                 if compiler_version in xcode_mapping:
                     xcode_dir = xcode_mapping[compiler_version]
