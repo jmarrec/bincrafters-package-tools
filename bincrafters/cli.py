@@ -18,6 +18,8 @@ def _parse_arguments(*args):
                         help="Specfies the CI platform")
     genmatrix.add_argument('--split-by-build-types', type=str, choices=["true", "false"],
                         help="Split build jobs by build types")
+    genmatrix.add_argument('--no-linux-clang', action='store_true',
+                        help="Don't build clang on linux")
     prepareenv = subparsers.add_parser("prepare-env", help="Prepares the environment by setting env vars and similar")
     prepareenv.add_argument('--platform', type=str, required=True, choices=["gha", "azp"],
                         help="Specfies the CI platform")
@@ -38,9 +40,9 @@ def run(*args):
         prepare_env(platform=arguments.platform, config=config, select_config=arguments.select_config)
     elif arguments.commands == "generate-ci-jobs":
         split_by_build_types = arguments.split_by_build_types
-
+        no_linux_clang = arguments.no_linux_clang
         # Note: it is important that we only print the matrix and absolutely nothing else
-        print(generate_ci_jobs(platform=arguments.platform, split_by_build_types=split_by_build_types))
+        print(generate_ci_jobs(platform=arguments.platform, split_by_build_types=split_by_build_types, no_linux_clang=no_linux_clang))
 
 
 def cli():

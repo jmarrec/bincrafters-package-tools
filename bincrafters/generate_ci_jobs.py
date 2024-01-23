@@ -41,7 +41,8 @@ def _do_discard_duplicated_build_ids() -> bool:
     return get_bool_from_env("BPT_MATRIX_DISCARD_DUPLICATE_BUILD_IDS", default="true")
 
 
-def _get_base_config(recipe_directory: str, platform: str, split_by_build_types: bool, build_set: str = "full", recipe_type: str = ""):
+def _get_base_config(recipe_directory: str, platform: str, split_by_build_types: bool, build_set: str = "full",
+                     recipe_type: str = "", no_linux_clang: bool = False):
     if recipe_type == "":
         if _do_discard_duplicated_build_ids():
             cwd = os.getcwd()
@@ -68,28 +69,36 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
             matrix_minimal["config"] = matrix["config"].copy()
         elif recipe_type == "unconditional_header_only":
             matrix["config"] = [
-                {"name": "Header-only Linux", "compiler": "CLANG", "version": "8", "os": "ubuntu-20.04"},
+                {"name": "Header-only Linux", "compiler": "GCC", "version": "9", "os": "ubuntu-20.04"},
                 {"name": "Header-only Windows", "compiler": "VISUAL", "version": "16", "os": "windows-latest"}
             ]
             matrix_minimal["config"] = matrix["config"].copy()
         else:
             matrix["config"] = [
-                {"name": "GCC 5", "compiler": "GCC", "version": "5", "os": "ubuntu-20.04"},
-                {"name": "GCC 6", "compiler": "GCC", "version": "6", "os": "ubuntu-20.04"},
-                {"name": "GCC 7", "compiler": "GCC", "version": "7", "os": "ubuntu-20.04"},
-                {"name": "GCC 8", "compiler": "GCC", "version": "8", "os": "ubuntu-20.04"},
+            #    {"name": "GCC 5", "compiler": "GCC", "version": "5", "os": "ubuntu-20.04"},
+            #    {"name": "GCC 6", "compiler": "GCC", "version": "6", "os": "ubuntu-20.04"},
+            #    {"name": "GCC 7", "compiler": "GCC", "version": "7", "os": "ubuntu-20.04"},
+            #    {"name": "GCC 8", "compiler": "GCC", "version": "8", "os": "ubuntu-20.04"},
                 {"name": "GCC 9", "compiler": "GCC", "version": "9", "os": "ubuntu-20.04"},
                 {"name": "GCC 10", "compiler": "GCC", "version": "10", "os": "ubuntu-20.04"},
                 {"name": "GCC 11", "compiler": "GCC", "version": "11", "os": "ubuntu-20.04"},
-                {"name": "CLANG 10", "compiler": "CLANG", "version": "10", "os": "ubuntu-20.04"},
-                {"name": "CLANG 11", "compiler": "CLANG", "version": "11", "os": "ubuntu-20.04"},
-                {"name": "CLANG 12", "compiler": "CLANG", "version": "12", "os": "ubuntu-20.04"},
-                {"name": "CLANG 13", "compiler": "CLANG", "version": "13", "os": "ubuntu-20.04"},
+                {"name": "GCC 12", "compiler": "GCC", "version": "12", "os": "ubuntu-20.04"},
+                {"name": "GCC 13", "compiler": "GCC", "version": "13", "os": "ubuntu-20.04"},
             ]
+            if not no_linux_clang:
+                matrix["config"] += [
+                    {"name": "CLANG 10", "compiler": "CLANG", "version": "10", "os": "ubuntu-20.04"},
+                    {"name": "CLANG 11", "compiler": "CLANG", "version": "11", "os": "ubuntu-20.04"},
+                    {"name": "CLANG 12", "compiler": "CLANG", "version": "12", "os": "ubuntu-20.04"},
+                    {"name": "CLANG 13", "compiler": "CLANG", "version": "13", "os": "ubuntu-20.04"},
+                ]
             if run_macos:
                 matrix["config"] += [
-                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
-                    {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
+                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macos-11"},
+                    {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "12.0", "os": "macos-11"},
+                    {"name": "macOS Apple-Clang 13", "compiler": "APPLE_CLANG", "version": "13.0", "os": "macos-12"},
+                    {"name": "macOS Apple-Clang 14", "compiler": "APPLE_CLANG", "version": "14.0", "os": "macos-12"},
+                    {"name": "macOS Apple-Clang 15", "compiler": "APPLE_CLANG", "version": "15.0", "os": "macos-13"},
                 ]
             if run_windows:
                 matrix["config"] += [
@@ -97,12 +106,15 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
                     # {"name": "Windows VS 2022 - Testing", "compiler": "VISUAL", "version": "17", "os": "windows-2022"},
                 ]
             matrix_minimal["config"] = [
-                {"name": "GCC 7", "compiler": "GCC", "version": "7", "os": "ubuntu-20.04"},
-                {"name": "CLANG 10", "compiler": "CLANG", "version": "10", "os": "ubuntu-20.04"},
+                {"name": "GCC 10", "compiler": "GCC", "version": "10", "os": "ubuntu-20.04"},
             ]
+            if not no_linux_clang:
+                matrix_minimal["config"] += [
+                    {"name": "CLANG 10", "compiler": "CLANG", "version": "10", "os": "ubuntu-20.04"},
+                ]
             if run_macos:
                 matrix_minimal["config"] += [
-                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
+                    {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macos-11"},
                 ]
             if run_windows:
                 matrix_minimal["config"] += [
@@ -114,13 +126,13 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
             matrix_minimal["config"] = []
         else:
             matrix["config"] = [
-                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
-                {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "12.0", "os": "macOS-11"},
+                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macos-11"},
+                {"name": "macOS Apple-Clang 12", "compiler": "APPLE_CLANG", "version": "12.0", "os": "macos-11"},
                 {"name": "Windows VS 2019", "compiler": "VISUAL", "version": "16", "os": "windows-2019"},
                 # {"name": "Windows VS 2022 - Testing", "compiler": "VISUAL", "version": "17", "os": "windows-2022"},
             ]
             matrix_minimal["config"] = [
-                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macOS-11"},
+                {"name": "macOS Apple-Clang 11", "compiler": "APPLE_CLANG", "version": "11.0", "os": "macos-11"},
                 {"name": "Windows VS 2019", "compiler": "VISUAL", "version": "16", "os": "windows-2019"},
             ]
 
@@ -155,7 +167,8 @@ def _get_base_config(recipe_directory: str, platform: str, split_by_build_types:
         return {"config": []}
 
 
-def generate_ci_jobs(platform: str, recipe_type: str = autodetect(), split_by_build_types: bool = False) -> str:
+def generate_ci_jobs(platform: str, recipe_type: str = autodetect(), split_by_build_types: bool = False,
+                     no_linux_clang: bool = False) -> str:
     if platform != "gha" and platform != "azp":
         return ""
 
@@ -213,7 +226,8 @@ def generate_ci_jobs(platform: str, recipe_type: str = autodetect(), split_by_bu
                             recipe_directory=os.path.join(path, version_attr["folder"]),
                             platform=platform,
                             split_by_build_types=split_by_build_types,
-                            build_set=version_build_value
+                            build_set=version_build_value,
+                            no_linux_clang=no_linux_clang,
                         )
                     else:
                         raise ValueError("Unknown build value for version {} detected!".format(version))
@@ -230,7 +244,8 @@ def generate_ci_jobs(platform: str, recipe_type: str = autodetect(), split_by_bu
                         final_matrix["config"].append(new_config)
 
     if directory_structure == DIR_STRUCTURE_ONE_RECIPE_ONE_VERSION:
-        matrix = _get_base_config(recipe_directory=".", platform=platform, split_by_build_types=split_by_build_types)
+        matrix = _get_base_config(recipe_directory=".", platform=platform, split_by_build_types=split_by_build_types,
+                                  no_linux_clang=no_linux_clang)
         for build_config in matrix["config"]:
             new_config = build_config.copy()
             new_config["cwd"] = "./"
