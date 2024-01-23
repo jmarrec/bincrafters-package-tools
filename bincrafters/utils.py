@@ -1,6 +1,6 @@
 import subprocess
 import os
-
+import re
 
 def _utils_execute_script(script: str, remove_newlines: bool = True) -> str:
     output = subprocess.run(script,
@@ -43,11 +43,12 @@ def utils_git_get_changed_dirs(base: str, head: str = None) -> list:
         head_merge_base = head
 
     merge_base = _utils_execute_script("git merge-base {} {}".format(base, head_merge_base))
-    dirs = _utils_execute_script("git diff --dirstat=files,0 {}..{} | sed 's/^[ 0-9.]\\+% //g'".format(merge_base, head),
+    dirs = _utils_execute_script("git diff --dirstat=files,0 {}..{}".format(merge_base, head),
                                  remove_newlines=False)
 
-    return dirs.splitlines()
-
+    dirs = dirs.splitlines()
+    regex = re.compile(r'^[\s0-9.]+% ')
+    return [regex.sub('', x) for x in dirs]
 
 def utils_file_contains(file, word):
     """ Read file and search for word
