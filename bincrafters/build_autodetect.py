@@ -67,6 +67,10 @@ def _get_builder():
             or autodetect_directory_structure() == DIR_STRUCTURE_CCI:
         kwargs["stable_branch_pattern"] = os.getenv("CONAN_STABLE_BRANCH_PATTERN", "main")
 
+    env_shared_option_name = os.getenv("CONAN_SHARED_OPTION_NAME", None)
+    shared_option_name = env_shared_option_name if str(env_shared_option_name).lower() != "false" else False
+    printer.print_message("shared_option_name: {}".format(str(shared_option_name)))
+
     if recipe_is_installer:
         arch = os.getenv("ARCH", "x86_64")
         builder = build_shared.get_builder(**kwargs)
@@ -75,7 +79,7 @@ def _get_builder():
         builder = build_shared.get_builder(**kwargs)
         builder.add()
     else:
-        builder = _get_default_builder(pure_c=recipe_is_pure_c, **kwargs)
+        builder = _get_default_builder(shared_option_name=shared_option_name, pure_c=recipe_is_pure_c, **kwargs)
 
     return builder
 
