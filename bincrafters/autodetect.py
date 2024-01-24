@@ -51,6 +51,9 @@ def is_pure_c():
     if recipe_contains("del self.settings.compiler.libcxx") and recipe_contains("del self.settings.compiler.cppstd"):
         return True
 
+    if recipe_contains('self.settings.rm_safe("compiler.libcxx")') and recipe_contains('self.settings.rm_safe("compiler.cppstd")'):
+        return True
+
     return False
 
 
@@ -67,12 +70,18 @@ def is_unconditional_header_only():
 
 def is_installer():
     if not is_unconditional_header_only() and not is_conditional_header_only():
-        if (recipe_contains("self.env_info.PATH.append") or recipe_contains("self.env_info.PATH.extend")) \
-                and (not recipe_has_setting("compiler") or recipe_contains("del self.info.settings.compiler")):
+        if ((
+            recipe_contains("self.env_info.PATH.append")
+            or recipe_contains("self.env_info.PATH.extend")
+            or recipe_contains("self.runenv_info.prepend_path")
+        ) and (
+            not recipe_has_setting("compiler")
+            or recipe_contains("del self.info.settings.compiler")
+            or recipe_contains('self.settings.rm_safe("compiler")')
+        )):
             return True
 
     return False
-
 
 def autodetect() -> str:
     if is_installer():
